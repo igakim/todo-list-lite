@@ -1,0 +1,40 @@
+$secondaryColor: rgba(111, 111, 111, .4);
+#app {
+  display: -webkit-flex;
+  display: -ms-flex;
+  display: flex;
+  justify-content: center;
+}
+
+.form-group {
+  text-align: center;
+  .form-control {
+    text-align: left;
+  }
+  button {
+    margin-top: .5em;
+  }
+}
+.todo-app {
+  width: 75%;
+}
+
+.todo-list {
+  &-main {
+    list-style-type: none;
+  }
+
+  &-item {
+    border: 1px solid $secondaryColor;
+    border-radius: 5px;
+    padding: 1em;
+    box-shadow: 3px 3px 5px 1px $secondaryColor;
+    &.finished {
+      background-color: green;
+      color: #fff;
+      h3 {
+        color: #fff;
+      }
+    }
+  }
+}
