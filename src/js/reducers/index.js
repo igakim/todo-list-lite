@@ -18,6 +18,22 @@ const articles = handleActions({
       return val;
     });
   },
+  [actions.editArticle](state, { payload: { id } }) {
+    return mapValues(state, (val, key) => {
+      if (key === id) return { ...val, isEdit: true };
+      return val;
+    });
+  },
+  [actions.submitChange](state, { payload: { text, description, id } }) {
+    return mapValues(state, (val, key) => {
+      if (key === id) {
+        return {
+          ...val, text, description, isEdit: false,
+        };
+      }
+      return val;
+    });
+  },
 }, {});
 
 export default combineReducers({ articles, form: formReducer });
