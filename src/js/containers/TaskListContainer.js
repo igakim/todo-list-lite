@@ -12,16 +12,22 @@ const articleList = createSelector(
 
 const finishedArticleList = createSelector(
   articleList,
-  articles => articles.filter(el => el.state === 'finished'),
+  articles => articles.filter(el => el.state === 'finished').reverse(),
 );
 
 const activeArticleList = createSelector(
   articleList,
-  articles => articles.filter(el => el.state === 'active'),
+  articles => articles.filter(el => el.state === 'active').reverse(),
+);
+
+const allArticles = createSelector(
+  finishedArticleList,
+  activeArticleList,
+  (finishedArticles, activeArticles) => activeArticles.concat(finishedArticles),
 );
 
 const mapStateToProps = state => ({
-  articles: articleList(state),
+  articles: allArticles(state),
   finishedArticles: finishedArticleList(state),
   activeArticles: activeArticleList(state),
 });
