@@ -1,11 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import EditForm from '../containers/EditFormContainer';
 
-const filter = [['all', 'Все'], ['active', 'Активные'], ['finished', 'Завершенные']];
+const filter = [
+  ['all', 'Все', 'Список всех задач', 'articles'],
+  ['active', 'Активные', 'Список активных задач', 'activeArticles'],
+  ['finished', 'Завершенные', 'Список завершенных задач', 'finishedArticles'],
+];
 
 class TaskList extends React.Component {
   state = {
-    filter: 'all',
+    filter: {
+      state: 'all',
+      title: 'Список всех задач',
+      articles: 'articles',
+    },
   }
 
   removeArticle = id => (e) => {
@@ -18,90 +28,66 @@ class TaskList extends React.Component {
     this.props.toggleArticleState({ id });
   }
 
-  toggleFilter = state => (e) => {
+  toggleFilter = (state, title, articles) => (e) => {
     e.preventDefault();
-    this.setState({ filter: state });
+    this.setState({ filter: { state, title, articles } });
   }
 
-  renderFiltredList = () => {
-    const title = this.state.filter === 'finished' ? 'Список завершенных дел' : 'Список незавершенных дел';
-    const activateButtonTitle = this.state.filter === 'finished' ? 'Активировать задачу' : 'Завершить задачу';
-    const articlesList = this.state.filter === 'active' ? this.props.activeArticles : this.props.finishedArticles;
-    const finishedClass = this.state.filter === 'finished' ? ' finished' : '';
-    return (
-      <div className="todo-list-container">
-        <h2 className="align-center">{title}</h2>
-        <p className="align-center">Внимание! Если закрыть или обновить страницу - задачи исчезнут (Нет бэкэнда!)</p>
-        <ul className="todo-list-main">
-          {articlesList.map(({
-            id, text, description,
-          }) => (
-            <li key={id} className={`todo-list-item${finishedClass}`}>
-              <h3>{text}</h3>
-              {description ? <p>{description}</p> : null}
-              <button
-                className="todo-list-button button-primary button-small button-round"
-                onClick={this.toggleArticleState(id)}
-              >{activateButtonTitle}</button>
-              <button
-                className="todo-list-button button-danger button-small button-round"
-                onClick={this.removeArticle(id)}
-              >Удалить задачу</button>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
+  editArticle = id => (e) => {
+    e.preventDefault();
+    this.props.editArticle({ id });
   }
 
-  renderAllList = () => {
-    const { activeArticles, finishedArticles } = this.props;
-    const allArticles = activeArticles.concat(finishedArticles);
-    return (
-      <div className="todo-list-container">
-        <h2 className="align-center">Список всех дел</h2>
-        <p className="align-center">Внимание! Если закрыть или обновить страницу - задачи исчезнут (Нет бэкэнда!)</p>
-        <ul className="todo-list-main">
-          {allArticles.map(({
-            id, text, description, state,
-          }) => (
-            <li key={id} className={`todo-list-item ${state === 'finished' ? 'finished' : ''}`}>
-              <h3>{text}</h3>
-              {description ? <p>{description}</p> : null}
-              <button
-                className="todo-list-button button-primary button-small button-round"
-                onClick={this.toggleArticleState(id)}
-              >{state === 'finished' ? 'Активировать задачу' : 'Завершить задачу'}</button>
-              <button
-                className="todo-list-button button-danger button-small button-round"
-                onClick={this.removeArticle(id)}
-              >Удалить задачу</button>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-  }
+  renderAllList = articles => (
+    <div className="todo-list-container">
+      <h2 className="align-center">{this.state.filter.title}</h2>
+      <p className="align-center">Внимание! Если закрыть или обновить страницу - задачи исчезнут (Нет бэкэнда!)</p>
+      <ul className="todo-list-main">
+        {articles.map(({
+          id, text, description, state, isEdit,
+        }) => (
+          <li key={id} className={`todo-list-item ${state === 'finished' ? 'finished' : ''}`}>
+            {isEdit ? <EditForm id={id} text={text} description={description} /> : (
+              <div>
+                <h3>{text}</h3>
+                <p>{description}</p>
+              </div>
+            )}
+            <button
+              className="todo-list-button button-primary button-small button-round"
+              onClick={this.toggleArticleState(id)}
+            >{state === 'finished' ? 'Активировать задачу' : 'Завершить задачу'}</button>
+            <button
+              className="todo-list-button button-danger button-small button-round"
+              onClick={this.removeArticle(id)}
+            >Удалить задачу</button>
+            <button className="edit" onClick={this.editArticle(id)}><FontAwesomeIcon icon="edit" /></button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
 
   render() {
-    const { articles } = this.props;
-    if (articles.length === 0) return null;
+    const articles = this.props[this.state.filter.articles];
+    const allArticles = this.props.articles;
+    if (allArticles.length === 0) return null;
     return (
       <div className="todo-list">
         <div className="buttons-group">
           <h5>Фильтр:</h5>
-          {filter.map(([state, name]) => {
-            if (state === this.state.filter) {
-              return <span key={state} className="current-filter">{name}</span>;
+          {filter.map(([state, name, title, curArticles]) => {
+            if (state === this.state.filter.state) {
+              return <span key={state} className="filter filter-current">{name}</span>;
             }
             return <button
               key={state}
-              className={`filter-${state}`}
-              onClick={this.toggleFilter(state)}
+              className={`filter filter-${state}`}
+              onClick={this.toggleFilter(state, title, curArticles)}
             >{name}</button>;
           })}
         </div>
-        {this.state.filter === 'all' ? this.renderAllList() : this.renderFiltredList()}
+        {this.renderAllList(articles)}
       </div>
     );
   }
@@ -111,6 +97,7 @@ TaskList.propTypes = {
   articles: PropTypes.array,
   removeArticle: PropTypes.func,
   toggleArticleState: PropTypes.func,
+  editArticle: PropTypes.func,
   activeArticles: PropTypes.array,
   finishedArticles: PropTypes.array,
 };
