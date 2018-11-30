@@ -4,6 +4,29 @@ $secondaryColor: rgba(111, 111, 111, .4);
   display: -ms-flex;
   display: flex;
   justify-content: center;
+  .editField {
+    width: 90%;
+    margin-bottom: .4em;
+  }
+
+  .filter {
+    margin: 0;
+    display: inline-block;
+    height: 30px;
+    padding: 0 10px;
+    font-size: 16px;
+    line-height: 30px;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    border: none;
+    &-current {
+      background-color: $secondaryColor;
+      color: #fff;
+    }
+    &:hover {
+      transform: none;
+    }
+  }
 }
 
 .form-group {
@@ -16,7 +39,7 @@ $secondaryColor: rgba(111, 111, 111, .4);
   }
 }
 .todo-app {
-  width: 75%;
+  width: 85%;
 }
 
 .todo-list {
@@ -29,6 +52,19 @@ $secondaryColor: rgba(111, 111, 111, .4);
     border-radius: 5px;
     padding: 1em;
     box-shadow: 3px 3px 5px 1px $secondaryColor;
+    position: relative;
+    .edit {
+      position: absolute;
+      right: .4em;
+      top: .4em;
+      padding: 0;
+      border: none;
+      font-size: 20px;
+      margin: 0;
+      height: auto;
+      line-height: 0;
+      width: auto;
+    }
     &.finished {
       background-color: green;
       color: #fff;
