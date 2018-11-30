@@ -56,36 +56,22 @@ class TaskList extends React.Component {
 
   renderAllList = () => {
     const { activeArticles, finishedArticles } = this.props;
-
+    const allArticles = activeArticles.concat(finishedArticles);
     return (
       <div className="todo-list-container">
         <h2 className="align-center">Список всех дел</h2>
         <p className="align-center">Внимание! Если закрыть или обновить страницу - задачи исчезнут (Нет бэкэнда!)</p>
         <ul className="todo-list-main">
-          {activeArticles.map(({
-            id, text, description,
+          {allArticles.map(({
+            id, text, description, state,
           }) => (
-            <li key={id} className="todo-list-item">
+            <li key={id} className={`todo-list-item ${state === 'finished' ? 'finished' : ''}`}>
               <h3>{text}</h3>
               {description ? <p>{description}</p> : null}
               <button
                 className="todo-list-button button-primary button-small button-round"
                 onClick={this.toggleArticleState(id)}
-              >Завершить задачу</button>
-              <button
-                className="todo-list-button button-danger button-small button-round"
-                onClick={this.removeArticle(id)}
-              >Удалить задачу</button>
-            </li>
-          ))}
-          {finishedArticles.map(({ id, text, description }) => (
-            <li key={id} className="todo-list-item finished">
-              <h3>{text}</h3>
-              {description ? <p>{description}</p> : null}
-              <button
-                className="todo-list-button button-primary button-small button-round"
-                onClick={this.toggleArticleState(id)}
-              >Активировать задачу</button>
+              >{state === 'finished' ? 'Активировать задачу' : 'Завершить задачу'}</button>
               <button
                 className="todo-list-button button-danger button-small button-round"
                 onClick={this.removeArticle(id)}
@@ -106,7 +92,7 @@ class TaskList extends React.Component {
           <h5>Фильтр:</h5>
           {filter.map(([state, name]) => {
             if (state === this.state.filter) {
-              return <span key={state}>{name}</span>;
+              return <span key={state} className="current-filter">{name}</span>;
             }
             return <button
               key={state}
